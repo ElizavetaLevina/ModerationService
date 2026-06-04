@@ -1,13 +1,21 @@
-﻿using ModerationService.Common.Enum;
+﻿using Shared.Contracts.Enum;
 
 namespace ModerationService.Common.DTO
 {
-    public class PostModeratedEvent
+	/// <summary>
+	/// DTO для передачи данных о результате модерации
+	/// </summary>
+	public class ModerationResultDTO
     {
+		/// <summary>
+		/// Уникальный идентификатор
+		/// </summary>
+		public int Id { get; set; }
+
         /// <summary>
         /// Идентификатор поста на модерации
         /// </summary>
-        public int PendingId { get; set; }
+        public int PostPendingId { get; set; }
 
         /// <summary>
         /// Статус модерации

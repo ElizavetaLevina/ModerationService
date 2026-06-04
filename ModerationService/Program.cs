@@ -18,7 +18,10 @@ namespace ModerationService
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            ConfigureServicesLogger.ConfigureServices(builder, isInDocker);
+			ConfigureServicesDatabase.ConfigureServices(builder.Services, config, isInDocker);
+			ConfigureServicesLogger.ConfigureServices(builder, isInDocker);
+			ConfigureServicesAutoMapper.ConfigureServices(builder.Services);
+			ConfigureServicesLogic.ConfigureServices(builder.Services);
             ConfigureServicesRabbitMQ.ConfigureServices(builder.Services, config, isInDocker);
             ConfigureServicesFilter.ConfigureServices();
 
