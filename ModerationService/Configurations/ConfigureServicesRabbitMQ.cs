@@ -1,4 +1,5 @@
 ﻿using MassTransit;
+using GreenPipes;
 using Microsoft.EntityFrameworkCore;
 using ModerationService.BLL.Consumers;
 using Npgsql;

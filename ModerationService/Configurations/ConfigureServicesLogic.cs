@@ -18,6 +18,7 @@ namespace ModerationService.Configurations
 
 			// Бизнес-логика
 			services.AddScoped<IModerationResultPublisherLogic, ModerationResultPublisherLogic>();
+			services.AddScoped<IModerationLogic, ModerationLogic>();
 		}
 	}
 }
