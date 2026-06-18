@@ -1,4 +1,3 @@
-using ModerationService.BLL;
 using ModerationService.Configurations;
 
 namespace ModerationService
