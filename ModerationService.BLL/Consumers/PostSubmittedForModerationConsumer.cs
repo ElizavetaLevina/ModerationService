@@ -1,5 +1,4 @@
-﻿using BogaNet.BWF;
-using MassTransit;
+﻿using MassTransit;
 using ModerationService.BLL.Interfaces;
 using ModerationService.Common.DTO;
 using Shared.Contracts.DTO;
@@ -11,9 +10,10 @@ namespace ModerationService.BLL.Consumers
 	/// Потребитель (consumer) сообщений о посте, поданном на модерацию.
 	/// Реализует логику автоматической модерации и сохранения результата в базу данных
 	/// </summary>
-	public class PostSubmittedForModerationConsumer(IModerationResultsRepository moderationResultsRepository) : IConsumer<PostSubmittedForModeration>
+	public class PostSubmittedForModerationConsumer(IModerationResultsRepository moderationResultsRepository, IModerationLogic moderationLogic) : IConsumer<PostSubmittedForModeration>
 	{
 		private readonly IModerationResultsRepository _moderationResultsRepository = moderationResultsRepository;
+		private readonly IModerationLogic _moderationLogic = moderationLogic;
 
 		/// <summary>
 		/// Обрабатывает входящее сообщение о посте, отправленного на модерацию. 
@@ -25,7 +25,7 @@ namespace ModerationService.BLL.Consumers
 		{
 			var message = context.Message;
 
-			var isApproved = Moderate(message);
+			var isApproved = _moderationLogic.IsApproved(message.Title, message.TextPost);
 
 			var moderationResult = new ModerationResultDTO
 			{
@@ -35,17 +35,6 @@ namespace ModerationService.BLL.Consumers
 			};
 
 			await _moderationResultsRepository.SaveModerationResult(moderationResult);
-		}
-
-		/// <summary>
-		/// Проверяет, содержит ли пост нецензурную лексику
-		/// </summary>
-		/// <param name="post">Пост</param>
-		/// <returns>Результат проверки</returns>
-		private bool Moderate(PostSubmittedForModeration post)
-		{
-			var fullText = $"{post.Title} {post.TextPost}";
-			return !Pacifier.Instance.Contains(fullText);
 		}
 	}
 }
