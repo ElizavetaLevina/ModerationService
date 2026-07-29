@@ -1,17 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
-using ModerationService.DAL.Configurations;
+﻿using Npgsql;
 
 namespace ModerationService.DAL.Models
 {
-	public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options)
+	public class ApplicationDbContext(string connectionString)
 	{
-		public DbSet<ModerationResultEntity> ModerationResults { get; set; }
+		private readonly string _connectionString = connectionString;
 
-		protected override void OnModelCreating(ModelBuilder modelBuilder)
-		{
-			base.OnModelCreating(modelBuilder);
-
-			modelBuilder.ApplyConfiguration(new ModerationResultConfiduration());
-		}
+		public NpgsqlConnection CreateConnection() => new NpgsqlConnection(_connectionString);
 	}
 }

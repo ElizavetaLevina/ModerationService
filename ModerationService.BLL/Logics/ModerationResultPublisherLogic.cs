@@ -26,20 +26,31 @@ namespace ModerationService.BLL.Logics
 		{
 			var results = await _moderationResultsRepository.GetModerationResults(token);
 
-			foreach (var result in results)
-			{
-				try
-				{
-					await _publishEndpoint.Publish(_mapper.Map<PostModeratedEvent>(result), token);
-					await _moderationResultsRepository.DeleteModerationResult(result.Id, token);
-				}
-				catch (Exception ex)
-				{
-					_logger.LogError(ex, "Не удалось отправить на модерацию пост {PostId}", result.Id);
-				}
-			}
+			await _unitOfWork.BeginTransactionAsync(token);
 
-			await _unitOfWork.SaveChangesAsync(token);
+			try
+			{
+				foreach (var result in results)
+				{
+					try
+					{
+						await _publishEndpoint.Publish(_mapper.Map<PostModeratedEvent>(result), token);
+						await _moderationResultsRepository.DeleteModerationResult(result.Id, token);
+					}
+					catch (Exception ex)
+					{
+						_logger.LogError(ex, "Не удалось отправить на модерацию пост {PostId}", result.Id);
+						throw;
+					}
+				}
+
+				await _unitOfWork.SaveChangesAsync(token);
+			}
+			catch
+			{
+				await _unitOfWork.RollbackAsync(token);
+				throw;
+			}
 		}
 	}
 }
