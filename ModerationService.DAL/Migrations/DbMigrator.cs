@@ -12,7 +12,7 @@ namespace ModerationService.DAL.Migrations
 		{
 			var upgrader = DeployChanges.To
 			.PostgresqlDatabase(_connectionString)
-			.WithScriptsFromFileSystem(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Scripts"))
+			.WithScriptsFromFileSystem(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Migrations", "Scripts"))
 			.WithTransaction()
 			.LogTo(_logger)
 			.Build();
