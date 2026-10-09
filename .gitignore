@@ -1,7 +1,6 @@
 **/obj/
 **/bin/
-.vs/
-.env
+.*
 **/logs/
 Resources/
-.editorconfig
+*.csproj.user
