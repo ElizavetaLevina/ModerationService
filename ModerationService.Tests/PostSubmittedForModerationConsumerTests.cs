@@ -3,7 +3,6 @@ using ModerationService.BLL.Consumers;
 using ModerationService.BLL.Interfaces;
 using ModerationService.Common.DTO;
 using Moq;
-using ModerationService.BLL.Logics;
 using Shared.Contracts.DTO;
 using Shared.Contracts.Enum;
 

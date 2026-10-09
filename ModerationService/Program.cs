@@ -10,9 +10,9 @@ namespace ModerationService
             var config = builder.Configuration;
             var isInDocker = Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true";
 
-            // Add services to the container.
+			// Add services to the container.
 
-            builder.Services.AddControllers();
+			builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
@@ -25,6 +25,8 @@ namespace ModerationService
             ConfigureServicesFilter.ConfigureServices();
 
             var app = builder.Build();
+
+			ConfigureServicesDatabase.Configure(app);
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())

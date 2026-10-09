@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
+using Dapper;
 using ModerationService.BLL.Interfaces;
 using ModerationService.Common.DTO;
 using ModerationService.DAL.Models;
@@ -18,19 +18,43 @@ namespace ModerationService.DAL.Repositories
 
 		public async Task<List<ModerationResultDTO>> GetModerationResults(CancellationToken token = default)
 		{
-			return await _mapper.ProjectTo<ModerationResultDTO>(_dbContext.ModerationResults).ToListAsync(token);
+			const string sql = @"
+				select 
+					id, 
+					post_pending_id, 
+					status, 
+					rejection_reason, 
+					date_moderate 
+				from moderation_results";
+
+			using var connection = _dbContext.CreateConnection();
+
+			return (await connection.QueryAsync<ModerationResultDTO>(new CommandDefinition(sql, cancellationToken: token))).AsList();
 		}
 
 		public async Task SaveModerationResult(ModerationResultDTO postSubmitted, CancellationToken token = default)
 		{
-			var moderationResult = _mapper.Map<ModerationResultEntity>(postSubmitted);
-			_dbContext.Add(moderationResult);
-			await _dbContext.SaveChangesAsync(token);
+			const string sql = @"
+				insert into moderation_results (post_pending_id, status, rejection_reason) 
+				values (@post_pending_id, @status, @rejection_reason)";
+
+			using var connection = _dbContext.CreateConnection();
+
+			await connection.ExecuteAsync(new CommandDefinition(
+				sql, 
+				new { post_pending_id = postSubmitted.PostPendingId, status = postSubmitted.Status, rejection_reason = postSubmitted.RejectionReason }, 
+				cancellationToken: token));
 		}
 
 		public async Task DeleteModerationResult(int moderationResultId, CancellationToken token = default)
 		{
-			_dbContext.ModerationResults.Remove(await _dbContext.ModerationResults.FirstAsync(c => c.Id == moderationResultId, token));
+			const string sql = @"
+				delete from moderation_results
+				where id = @id";
+
+			using var connection = _dbContext.CreateConnection();
+
+			await connection.ExecuteAsync(new CommandDefinition(sql, new { id = moderationResultId }, cancellationToken: token));
 		}
 	}
 }

@@ -26,20 +26,20 @@ namespace ModerationService.Configurations
                     .MinimumLevel.Override("System", LogEventLevel.Error)
                     .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Error)
                     .MinimumLevel.Override("MassTransit", LogEventLevel.Debug)
-                    .Filter.ByIncludingOnly(logEvent =>
-                     {
-                         if (logEvent.Properties.TryGetValue("SourceContext", out var sourceContext))
-                         {
-                             var context = sourceContext.ToString();
-                             if (context.Contains("MassTransit"))
-                             {
-                                 var message = logEvent.RenderMessage();
-                                 return message.Contains("SEND") || message.Contains("RECEIVE") || message.Contains("SKIP") || logEvent.Level >= LogEventLevel.Error;
-                             }
-                         }
-                         return true;
-                     })
-                    .CreateLogger();
+					.Filter.ByIncludingOnly(logEvent =>
+					 {
+						 if (logEvent.Properties.TryGetValue("SourceContext", out var sourceContext))
+						 {
+							 var context = sourceContext.ToString();
+							 if (context.Contains("MassTransit"))
+							 {
+								 var message = logEvent.RenderMessage();
+								 return message.Contains("SEND") || message.Contains("RECEIVE") || message.Contains("SKIP") || logEvent.Level >= LogEventLevel.Error;
+							 }
+						 }
+						 return true;
+					 })
+					.CreateLogger();
             }
             else
             {

@@ -7,6 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Dapper" Version="2.1.79" />
+    <PackageReference Include="dbup-core" Version="6.1.1" />
+    <PackageReference Include="dbup-postgresql" Version="7.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.11" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.11" />
   </ItemGroup>
@@ -15,5 +18,11 @@
     <ProjectReference Include="..\ModerationService.BLL\ModerationService.BLL.csproj" />
     <ProjectReference Include="..\ModerationService.Common\ModerationService.Common.csproj" />
   </ItemGroup>
+
+	<ItemGroup>
+		<None Update="Migrations\Scripts\*.sql">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
 
 </Project>
