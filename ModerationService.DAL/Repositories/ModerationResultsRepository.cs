@@ -11,9 +11,10 @@ namespace ModerationService.DAL.Repositories
 	/// </summary>
 	/// <param name="dbContext">Контекст базы данных</param>
 	/// <param name="mapper">Автомаппер</param>
-	public class ModerationResultsRepository(ApplicationDbContext dbContext, IMapper mapper) : IModerationResultsRepository
+	public class ModerationResultsRepository(ApplicationDbContext dbContext, IUnitOfWork unitOfWork, IMapper mapper) : IModerationResultsRepository
 	{
 		private readonly ApplicationDbContext _dbContext = dbContext;
+        private readonly IUnitOfWork _unitOfWork = unitOfWork;
 		private readonly IMapper _mapper = mapper;
 
 		public async Task<List<ModerationResultDTO>> GetModerationResults(CancellationToken token = default)
@@ -34,15 +35,15 @@ namespace ModerationService.DAL.Repositories
 
 		public async Task SaveModerationResult(ModerationResultDTO postSubmitted, CancellationToken token = default)
 		{
+			var connection = _unitOfWork.Connection ?? throw new InvalidOperationException("Соединение не инициализировано");
 			const string sql = @"
 				insert into moderation_results (post_pending_id, status, rejection_reason) 
 				values (@post_pending_id, @status, @rejection_reason)";
 
-			using var connection = _dbContext.CreateConnection();
-
 			await connection.ExecuteAsync(new CommandDefinition(
 				sql, 
 				new { post_pending_id = postSubmitted.PostPendingId, status = postSubmitted.Status, rejection_reason = postSubmitted.RejectionReason }, 
+                transaction: _unitOfWork.Transaction,
 				cancellationToken: token));
 		}
 

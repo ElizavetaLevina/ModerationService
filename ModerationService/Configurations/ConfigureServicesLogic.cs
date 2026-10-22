@@ -14,11 +14,13 @@ namespace ModerationService.Configurations
 
 			// Репозитории
 			services.AddScoped<IModerationResultsRepository, ModerationResultsRepository>();
+			services.AddScoped<IProcessedMessageRepository, ProcessedMessageRepository>();
 			services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 			// Бизнес-логика
 			services.AddScoped<IModerationResultPublisherLogic, ModerationResultPublisherLogic>();
 			services.AddScoped<IModerationLogic, ModerationLogic>();
+			services.AddScoped<IProcessedMessageLogic, ProcessedMessageLogic>();
 		}
 	}
 }

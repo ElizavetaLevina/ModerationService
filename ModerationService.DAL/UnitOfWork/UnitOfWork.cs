@@ -9,16 +9,15 @@ namespace ModerationService.DAL.UnitOfWork
 	/// </summary>
 	/// <param name="dbContext">Контекст базы данных</param>
 	/// <param name="moderationResultsRepository">Репозиторий результатов модерации</param>
-	public class UnitOfWork(ApplicationDbContext dbContext, IModerationResultsRepository moderationResultsRepository) : IUnitOfWork
+	public sealed class UnitOfWork(ApplicationDbContext dbContext) : IUnitOfWork
 	{
 		private readonly ApplicationDbContext _dbContext = dbContext;
-		private readonly IModerationResultsRepository _moderationResultsRepository = moderationResultsRepository;
 		private NpgsqlConnection? _connection;
 		private NpgsqlTransaction? _transaction;
 
-		public IModerationResultsRepository ModerationResultsRepository => _moderationResultsRepository;
-
 		public IDbTransaction? Transaction => _transaction;
+
+		public IDbConnection? Connection => _connection;
 
 		public async Task BeginTransactionAsync(CancellationToken token = default)
 		{

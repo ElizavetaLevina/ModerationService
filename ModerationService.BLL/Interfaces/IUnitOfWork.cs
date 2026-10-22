@@ -8,14 +8,14 @@ namespace ModerationService.BLL.Interfaces
 	public interface IUnitOfWork : IDisposable
 	{
 		/// <summary>
-		/// Репозиторий результатов модерации
-		/// </summary>
-		IModerationResultsRepository ModerationResultsRepository { get; }
-
-		/// <summary>
 		/// Транзакция
 		/// </summary>
 		IDbTransaction? Transaction { get; }
+        
+        /// <summary>
+        /// Соединение с бд
+        /// </summary>
+        IDbConnection? Connection { get; }
 
 		/// <summary>
 		/// Начинает транзакцию
