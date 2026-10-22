@@ -18,7 +18,7 @@ namespace ModerationService.BLL.Logics
 
 		public async Task DeleteMessages(DateTime deleteBefore, CancellationToken token = default)
 		{
-			_messageRepository.DeleteMessages(deleteBefore, token);
+			await _messageRepository.DeleteMessages(deleteBefore, token);
 		}
 	}
 }

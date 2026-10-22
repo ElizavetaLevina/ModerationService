@@ -33,6 +33,7 @@ namespace ModerationService.Configurations
             
             // Options
             services.Configure<ModerationResultPublisherOptions>(configuration.GetSection(ModerationResultPublisherOptions.SectionName));
+            services.Configure<ProcessedMessagesCleanupOptions>(configuration.GetSection(ProcessedMessagesCleanupOptions.SectionName));
 		}
 	}
 }
