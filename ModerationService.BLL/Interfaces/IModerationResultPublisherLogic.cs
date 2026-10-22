@@ -1,15 +1,15 @@
 ﻿namespace ModerationService.BLL.Interfaces
 {
 	/// <summary>
-	/// Логика публикации постов на модерацию
+	/// Логика публикации резлуьтатов модерации
 	/// </summary>
 	public interface IModerationResultPublisherLogic
 	{
 		/// <summary>
-		/// Отправка постов на модерацию и обновление их статусов
+		/// Отправка резлуьтатов модерации и их удаление
 		/// </summary>
 		/// <param name="token">Токен отмены</param>
-		/// <returns>Задача отправки постов</returns>
-		Task PublishMessage(CancellationToken token = default);
+		/// <returns>Количество отправленных результатов модерации</returns>
+		Task<int> PublishMessage(CancellationToken token = default);
 	}
 }

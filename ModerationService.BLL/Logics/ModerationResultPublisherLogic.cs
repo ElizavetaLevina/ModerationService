@@ -3,6 +3,7 @@ using MassTransit;
 using Microsoft.Extensions.Logging;
 using ModerationService.BLL.Interfaces;
 using Shared.Contracts.DTO;
+using System.Collections.Concurrent;
 
 namespace ModerationService.BLL.Logics
 {
@@ -22,25 +23,43 @@ namespace ModerationService.BLL.Logics
 		private readonly ILogger<IModerationResultPublisherLogic> _logger = logger;
 		private readonly IMapper _mapper = mapper;
 
-		public async Task PublishMessage(CancellationToken token = default)
+		public async Task<int> PublishMessage(CancellationToken token = default)
 		{
-			var results = await _moderationResultsRepository.GetModerationResults(token);
-
-			await _unitOfWork.BeginTransactionAsync(token);
+			var results = await _moderationResultsRepository.GetModerationResultsBatch(token);
+			var publishedIds = new ConcurrentBag<int>();
+			var failedIds = new ConcurrentBag<int>();
+			var parallelOption = new ParallelOptions() { MaxDegreeOfParallelism = 10, CancellationToken = token };
 
 			try
 			{
-				foreach (var result in results)
+				await Parallel.ForEachAsync(results, parallelOption, async (result, parallelToken) =>
 				{
 					try
 					{
-						await _publishEndpoint.Publish(_mapper.Map<PostModeratedEvent>(result), token);
-						await _moderationResultsRepository.DeleteModerationResult(result.Id, token);
+						await _publishEndpoint.Publish(_mapper.Map<PostModeratedEvent>(result), parallelToken);
+						publishedIds.Add(result.Id);
 					}
 					catch (Exception ex)
 					{
-						_logger.LogError(ex, "Не удалось отправить на модерацию пост {PostId}", result.Id);
-						throw;
+						failedIds.Add(result.Id);
+						_logger.LogError(ex, "Не удалось отправить результат модерации {ResultId}", result.Id);
+					}
+				});
+
+                await _unitOfWork.BeginTransactionAsync(token);
+                
+				foreach (var resultId in failedIds)
+				{
+					await _moderationResultsRepository.IncrementRetryCount(resultId, token: token);
+				}
+
+				if (!publishedIds.IsEmpty)
+				{
+					var deletedIds = await _moderationResultsRepository.DeleteModerationResults(publishedIds, token);
+					foreach (var resultId in publishedIds)
+					{
+						if (!deletedIds.Contains(resultId))
+							_logger.LogWarning("Результат модерации {ResultId} не найден при удалении", resultId);
 					}
 				}
 
@@ -51,6 +70,8 @@ namespace ModerationService.BLL.Logics
 				await _unitOfWork.RollbackAsync(token);
 				throw;
 			}
+
+			return publishedIds.Count;
 		}
 	}
 }

@@ -3,14 +3,23 @@ using ModerationService.BLL.Logics;
 using ModerationService.DAL.Repositories;
 using ModerationService.DAL.UnitOfWork;
 using ModerationService.HostedServices;
+using ModerationService.Options;
 
 namespace ModerationService.Configurations
 {
+    /// <summary>
+    /// Конфигурация бизнес-логики, репозиториев и внешних сервисов
+    /// </summary>
 	public static class ConfigureServicesLogic
 	{
-		public static void ConfigureServices(IServiceCollection services)
+        /// <summary>
+        /// Регистрирует репозитории, логику и внешние сервисы
+        /// </summary>
+        /// <param name="services">Коллекция сервисов</param>
+        /// <param name="configuration">Конфигурация приложения</param>
+		public static void ConfigureServices(IServiceCollection services, ConfigurationManager configuration)
 		{
-			services.AddHostedService<ModerationResultPublisherHostedService>();
+			services.AddHostedService<ModerationResultPublisherService>();
 
 			// Репозитории
 			services.AddScoped<IModerationResultsRepository, ModerationResultsRepository>();
@@ -21,6 +30,9 @@ namespace ModerationService.Configurations
 			services.AddScoped<IModerationResultPublisherLogic, ModerationResultPublisherLogic>();
 			services.AddScoped<IModerationLogic, ModerationLogic>();
 			services.AddScoped<IProcessedMessageLogic, ProcessedMessageLogic>();
+            
+            // Options
+            services.Configure<ModerationResultPublisherOptions>(configuration.GetSection(ModerationResultPublisherOptions.SectionName));
 		}
 	}
 }

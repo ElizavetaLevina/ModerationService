@@ -31,5 +31,10 @@ namespace ModerationService.DAL.Models
 		/// Дата завершения модерации
 		/// </summary>
 		public DateTime DateModerate { get; set; } = DateTime.Now;
+        
+        /// <summary>
+        /// Количество попыток отправить на модерацию
+        /// </summary>
+        public int RetryCount { get; set; }
 	}
 }

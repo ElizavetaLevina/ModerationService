@@ -1,0 +1,1 @@
+alter table moderation_results add column retry_count int not null default 0;

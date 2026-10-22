@@ -12,7 +12,7 @@ namespace ModerationService.BLL.Interfaces
 		/// </summary>
 		/// <param name="token">Токен отмены</param>
 		/// <returns>Список результатов</returns>
-		Task<List<ModerationResultDTO>> GetModerationResults(CancellationToken token = default);
+		Task<List<ModerationResultDTO>> GetModerationResultsBatch(CancellationToken token = default);
 
 		/// <summary>
 		/// Сохранение результата модерации
@@ -23,11 +23,20 @@ namespace ModerationService.BLL.Interfaces
 		Task SaveModerationResult(ModerationResultDTO postSubmitted, CancellationToken token = default);
 
 		/// <summary>
-		/// Удаление результата модерации
+		/// Удаление результатов модерации
 		/// </summary>
-		/// <param name="moderationResultId">Идентификатор результата</param>
+		/// <param name="moderationResultIds">Коллекция идентификаторов результатов</param>
 		/// <param name="token">Токен отмены</param>
 		/// <returns>Задача удаления</returns>
-		Task DeleteModerationResult(int moderationResultId,  CancellationToken token = default);
+		Task<IReadOnlyCollection<int>> DeleteModerationResults(IReadOnlyCollection<int> moderationResultIds,  CancellationToken token = default);
+
+        /// <summary>
+        /// Увеличивает счетчик попыток отправления результата модерации
+        /// </summary>
+        /// <param name="moderationResultId">Идентификаторы результата модерации</param>
+        /// <param name="maxRetries">Максимальное количество повторов</param>
+        /// <param name="token">Токен отмены</param>
+        /// <returns>Задача инкремента</returns>
+		Task IncrementRetryCount(int moderationResultId, int maxRetries = 5, CancellationToken token = default);
 	}
 }

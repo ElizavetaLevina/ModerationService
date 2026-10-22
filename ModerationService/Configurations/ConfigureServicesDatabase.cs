@@ -1,7 +1,5 @@
-﻿using ModerationService.Common.DTO;
-using ModerationService.DAL.Migrations;
+﻿using ModerationService.DAL.Migrations;
 using ModerationService.DAL.Models;
-using System.Reflection;
 
 namespace ModerationService.Configurations
 {
@@ -22,16 +20,10 @@ namespace ModerationService.Configurations
 			var connectionString = configuration.GetConnectionString(connectionStringName)
 				?? throw new InvalidOperationException($"Connection string '{connectionStringName}' not found in appsettings.json");
 
-			services.AddScoped<ApplicationDbContext>(option => new ApplicationDbContext(connectionString));
+			services.AddScoped<ApplicationDbContext>(_ => new ApplicationDbContext(connectionString));
 			services.AddTransient<DbMigrator>(option => new DbMigrator(connectionString, option.GetRequiredService<ILogger<DbMigrator>>()));
 
-			Dapper.SqlMapper.SetTypeMap(typeof(ModerationResultDTO), new Dapper.CustomPropertyTypeMap(typeof(ModerationResultDTO), (type, columnName) =>
-			{
-				var prop = type.GetProperties().FirstOrDefault(p =>
-					p.GetCustomAttribute<System.ComponentModel.DataAnnotations.Schema.ColumnAttribute>()?.Name == columnName);
-
-				return prop ?? throw new InvalidOperationException($"Не найдено свойство для колонки {columnName}");
-			}));
+			Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
 		}
 
 		/// <summary>

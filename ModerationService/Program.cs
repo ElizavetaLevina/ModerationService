@@ -20,7 +20,7 @@ namespace ModerationService
 			ConfigureServicesDatabase.ConfigureServices(builder.Services, config, isInDocker);
 			ConfigureServicesLogger.ConfigureServices(builder, isInDocker);
 			ConfigureServicesAutoMapper.ConfigureServices(builder.Services);
-			ConfigureServicesLogic.ConfigureServices(builder.Services);
+			ConfigureServicesLogic.ConfigureServices(builder.Services, config);
             ConfigureServicesRabbitMQ.ConfigureServices(builder.Services, config, isInDocker);
             ConfigureServicesFilter.ConfigureServices();
 
