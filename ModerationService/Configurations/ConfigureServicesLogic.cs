@@ -34,6 +34,7 @@ namespace ModerationService.Configurations
             // Options
             services.Configure<ModerationResultPublisherOptions>(configuration.GetSection(ModerationResultPublisherOptions.SectionName));
             services.Configure<ProcessedMessagesCleanupOptions>(configuration.GetSection(ProcessedMessagesCleanupOptions.SectionName));
+            services.Configure<ErrorQueueMonitorOptions>(configuration.GetSection(ErrorQueueMonitorOptions.SectionName));
 		}
 	}
 }

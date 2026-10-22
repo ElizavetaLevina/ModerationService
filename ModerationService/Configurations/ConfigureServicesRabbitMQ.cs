@@ -1,8 +1,5 @@
-﻿using GreenPipes;
-using MassTransit;
-using Microsoft.EntityFrameworkCore;
+﻿using MassTransit;
 using ModerationService.BLL.Consumers;
-using Npgsql;
 
 namespace ModerationService.Configurations
 {
@@ -21,7 +18,7 @@ namespace ModerationService.Configurations
 		{
 			services.AddMassTransit(c =>
 			{
-				c.AddConsumer<PostSubmittedForModerationConsumer>();
+				c.AddConsumer<PostSubmittedForModerationConsumer, PostSubmittedForModerationConsumerDefinition>();
 
 				c.UsingRabbitMq((context, cfg) =>
 				{
@@ -31,15 +28,7 @@ namespace ModerationService.Configurations
 						x.Username(configuration["RabbitMQ:UserName"]);
 						x.Password(configuration["RabbitMQ:Password"]);
 					});
-
-					cfg.UseMessageRetry(x =>
-					{
-						x.Intervals(TimeSpan.FromSeconds(10), TimeSpan.FromMinutes(2), TimeSpan.FromMinutes(10));
-						x.Handle<NpgsqlException>();
-						x.Handle<TimeoutException>();
-						x.Handle<DbUpdateException>();
-					});
-
+                    
 					cfg.ConfigureEndpoints(context);
 				});
 			})
