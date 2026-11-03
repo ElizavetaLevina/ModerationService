@@ -1,5 +1,5 @@
 ﻿using ModerationService.DAL.Migrations;
-using ModerationService.DAL.Models;
+using ModerationService.DAL.Data;
 
 namespace ModerationService.Configurations
 {
@@ -16,11 +16,11 @@ namespace ModerationService.Configurations
 		/// <param name="isInDocker">Флаг запуска в контейнере</param>
 		public static void ConfigureServices(IServiceCollection services, IConfiguration configuration, bool isInDocker)
 		{
-			var connectionStringName = isInDocker ? nameof(ApplicationDbContext) : $"{nameof(ApplicationDbContext)}_Local";
+			var connectionStringName = isInDocker ? nameof(ConnectionProvider) : $"{nameof(ConnectionProvider)}_Local";
 			var connectionString = configuration.GetConnectionString(connectionStringName)
 				?? throw new InvalidOperationException($"Connection string '{connectionStringName}' not found in appsettings.json");
 
-			services.AddScoped<ApplicationDbContext>(_ => new ApplicationDbContext(connectionString));
+			services.AddScoped<ConnectionProvider>(_ => new ConnectionProvider(connectionString));
 			services.AddTransient<DbMigrator>(option => new DbMigrator(connectionString, option.GetRequiredService<ILogger<DbMigrator>>()));
 
 			Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;

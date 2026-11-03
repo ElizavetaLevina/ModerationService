@@ -1,8 +1,7 @@
-﻿using AutoMapper;
-using MassTransit;
+﻿using MassTransit;
 using Microsoft.Extensions.Logging;
 using ModerationService.BLL.Interfaces;
-using Shared.Contracts.DTO;
+using ModerationService.Common.Mappings;
 using System.Collections.Concurrent;
 
 namespace ModerationService.BLL.Logics
@@ -14,14 +13,12 @@ namespace ModerationService.BLL.Logics
 	/// <param name="publishEndpoint">Endpoint для публикации сообщений в RabbitMQ</param>
 	/// <param name="unitOfWork">Unit of Work для управления транзакциями</param>
 	/// <param name="logger">Логгер</param>
-	/// <param name="mapper">Автомаппер</param>
-	public class ModerationResultPublisherLogic(IModerationResultsRepository moderationResultsRepository, IPublishEndpoint publishEndpoint, IUnitOfWork unitOfWork, ILogger<IModerationResultPublisherLogic> logger, IMapper mapper) : IModerationResultPublisherLogic
+	public class ModerationResultPublisherLogic(IModerationResultsRepository moderationResultsRepository, IPublishEndpoint publishEndpoint, IUnitOfWork unitOfWork, ILogger<IModerationResultPublisherLogic> logger) : IModerationResultPublisherLogic
 	{
 		private readonly IModerationResultsRepository _moderationResultsRepository = moderationResultsRepository;
 		private readonly IPublishEndpoint _publishEndpoint = publishEndpoint;
 		private readonly IUnitOfWork _unitOfWork = unitOfWork;
 		private readonly ILogger<IModerationResultPublisherLogic> _logger = logger;
-		private readonly IMapper _mapper = mapper;
 
 		public async Task<int> PublishMessage(CancellationToken token = default)
 		{
@@ -36,7 +33,7 @@ namespace ModerationService.BLL.Logics
 				{
 					try
 					{
-						await _publishEndpoint.Publish(_mapper.Map<PostModeratedEvent>(result), parallelToken);
+						await _publishEndpoint.Publish(result.ToPostModeratedEvent(), parallelToken);
 						publishedIds.Add(result.Id);
 					}
 					catch (Exception ex)

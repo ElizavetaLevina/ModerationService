@@ -1,12 +1,12 @@
 using Dapper;
 using ModerationService.BLL.Interfaces;
-using ModerationService.DAL.Models;
+using ModerationService.DAL.Data;
 
 namespace ModerationService.DAL.Repositories
 {
-	public class ProcessedMessageRepository(ApplicationDbContext dbContext, IUnitOfWork unitOfWork) : IProcessedMessageRepository
+	public class ProcessedMessageRepository(ConnectionProvider dbContext, IUnitOfWork unitOfWork) : IProcessedMessageRepository
 	{
-        private readonly ApplicationDbContext _dbContext = dbContext;
+        private readonly ConnectionProvider _dbContext = dbContext;
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         
 		public async Task AddMessage(Guid messageId, CancellationToken token = default)

@@ -1,5 +1,5 @@
 ﻿using ModerationService.BLL.Interfaces;
-using ModerationService.DAL.Models;
+using ModerationService.DAL.Data;
 using Npgsql;
 using System.Data;
 namespace ModerationService.DAL.UnitOfWork
@@ -8,10 +8,9 @@ namespace ModerationService.DAL.UnitOfWork
 	/// Реализация Unit of Work для управления транзакциями
 	/// </summary>
 	/// <param name="dbContext">Контекст базы данных</param>
-	/// <param name="moderationResultsRepository">Репозиторий результатов модерации</param>
-	public sealed class UnitOfWork(ApplicationDbContext dbContext) : IUnitOfWork
+	public sealed class UnitOfWork(ConnectionProvider dbContext) : IUnitOfWork
 	{
-		private readonly ApplicationDbContext _dbContext = dbContext;
+		private readonly ConnectionProvider _dbContext = dbContext;
 		private NpgsqlConnection? _connection;
 		private NpgsqlTransaction? _transaction;
 

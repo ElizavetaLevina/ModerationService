@@ -1,7 +1,7 @@
 ﻿using Dapper;
 using ModerationService.BLL.Interfaces;
 using ModerationService.Common.DTO;
-using ModerationService.DAL.Models;
+using ModerationService.DAL.Data;
 using Shared.Contracts.Enum;
 
 namespace ModerationService.DAL.Repositories
@@ -11,9 +11,9 @@ namespace ModerationService.DAL.Repositories
 	/// </summary>
 	/// <param name="dbContext">Контекст базы данных</param>
 	/// <param name="unitOfWork">Unit of Work для предоставления соедниенения с бд и управления транзакциями</param>
-	public class ModerationResultsRepository(ApplicationDbContext dbContext, IUnitOfWork unitOfWork) : IModerationResultsRepository
+	public class ModerationResultsRepository(ConnectionProvider dbContext, IUnitOfWork unitOfWork) : IModerationResultsRepository
 	{
-		private readonly ApplicationDbContext _dbContext = dbContext;
+		private readonly ConnectionProvider _dbContext = dbContext;
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private const int BatchSize = 50;
 

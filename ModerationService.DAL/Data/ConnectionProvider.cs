@@ -1,8 +1,8 @@
 ﻿using Npgsql;
 
-namespace ModerationService.DAL.Models
+namespace ModerationService.DAL.Data
 {
-	public class ApplicationDbContext(string connectionString)
+	public class ConnectionProvider(string connectionString)
 	{
 		private readonly string _connectionString = connectionString;
 
