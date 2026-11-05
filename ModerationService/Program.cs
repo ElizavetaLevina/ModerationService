@@ -8,7 +8,6 @@ namespace ModerationService
         {
             var builder = WebApplication.CreateBuilder(args);
             var config = builder.Configuration;
-            var isInDocker = Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true";
 
 			// Add services to the container.
 
@@ -17,10 +16,10 @@ namespace ModerationService
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-			ConfigureServicesDatabase.ConfigureServices(builder.Services, config, isInDocker);
-			ConfigureServicesLogger.ConfigureServices(builder, isInDocker);
+			ConfigureServicesDatabase.ConfigureServices(builder.Services, config);
+			ConfigureServicesLogger.ConfigureServices(builder);
 			ConfigureServicesLogic.ConfigureServices(builder.Services, config);
-            ConfigureServicesRabbitMQ.ConfigureServices(builder.Services, config, isInDocker);
+            ConfigureServicesRabbitMQ.ConfigureServices(builder.Services, config);
             ConfigureServicesFilter.ConfigureServices();
 
             var app = builder.Build();
@@ -28,7 +27,7 @@ namespace ModerationService
 			ConfigureServicesDatabase.Configure(app);
 
             // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
+            if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Docker"))
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();

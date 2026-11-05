@@ -13,12 +13,11 @@ namespace ModerationService.Configurations
 		/// </summary>
 		/// <param name="services">Коллекция сервисов</param>
 		/// <param name="configuration">Конфигурация приложения</param>
-		/// <param name="isInDocker">Флаг запуска в контейнере</param>
-		public static void ConfigureServices(IServiceCollection services, IConfiguration configuration, bool isInDocker)
+		public static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
 		{
-			var connectionStringName = isInDocker ? nameof(ConnectionProvider) : $"{nameof(ConnectionProvider)}_Local";
+			var connectionStringName = nameof(ConnectionProvider);
 			var connectionString = configuration.GetConnectionString(connectionStringName)
-				?? throw new InvalidOperationException($"Connection string '{connectionStringName}' not found in appsettings.json");
+				?? throw new InvalidOperationException($"Строка подключение к бд '{connectionStringName}' не найдена в  appsettings.json");
 
 			services.AddScoped<ConnectionProvider>(_ => new ConnectionProvider(connectionString));
 			services.AddTransient<DbMigrator>(option => new DbMigrator(connectionString, option.GetRequiredService<ILogger<DbMigrator>>()));

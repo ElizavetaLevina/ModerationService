@@ -4,3 +4,4 @@
 **/logs/
 Resources/
 *.csproj.user
+**/launchSettings.json
